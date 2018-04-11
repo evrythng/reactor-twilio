@@ -21,7 +21,7 @@ message details embedded within the action will cause Twilio to send an SMS.
 ## Configuration
 
 1. Obtain your Account SID and Auth Token from the [Twilio console](https://www.twilio.com/console).
-2. Set these on the chosen EVRYTHNG application's `customFields` as `acountSid` and `authToken`.
+2. Set these on the chosen EVRYTHNG application's `customFields` as `accountSid` and `authToken`.
 
 
 ## Send an SMS
