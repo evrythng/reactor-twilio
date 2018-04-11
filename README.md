@@ -44,6 +44,7 @@ Test by sending an HTTP request:
 ```
 POST /actions/_sendSMS
 Content-Type: application/json
+Authorization: $OPERATOR_API_KEY
 
 {
   "type": "_sendSMS",
