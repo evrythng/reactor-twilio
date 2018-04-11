@@ -33,12 +33,6 @@ an SMS through EVRYTHNG is simply a matter of creating an action with the messag
 * `customFields.from` - Your chosen Twilio phone number, set up through the Twilio console.
 * `customFields.body` - The content of the SMS message.
 
-At the moment, the script sends an SMS message when an EVRYTHNG action is created in the scope of 
-the project. In a more advanced integration, an action created when some condition is reached in a 
-Thng property, or on a 
-[Reactor schedule](https://developers.evrythng.com/reference#section-reactor-scheduler-api) can be 
-used.
-
 Test by sending an HTTP request:
 
 ```
@@ -53,6 +47,32 @@ Authorization: $OPERATOR_API_KEY
     "to": "+447865784352",
     "from": "+441246334321",
     "message": "Hello from the EVRYTHNG Reactor!"
+  }
+}
+```
+
+At the moment, the script sends an SMS message when an EVRYTHNG action is created in the scope of 
+the project. In a more advanced integration, an action created when some condition is reached in a 
+Thng property, or on a 
+[Reactor schedule](https://developers.evrythng.com/reference#section-reactor-scheduler-api) can be 
+used.
+
+```js
+function onThngPropertiesChanged(event) {
+  const { newValue } = event.changes.temperature;
+  if (newValue > 100) {
+    // Send temperature alert
+    const message = {
+      to: '+447865784352',
+      from: '+441246334321',
+      message: `Temperature is very high: ${newValue}`
+    };
+    
+    app.$init
+      .then(() => sendSMS(message))
+      .then(message => logger.info(`message.id=${message.sid}`))
+      .catch(err => logger.error(err))
+      .then(done);
   }
 }
 ```
