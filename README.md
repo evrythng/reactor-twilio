@@ -70,10 +70,10 @@ Each item in the `PROPERTY_RULES` array must take the following format:
 
 ```json
 {
-  condition: '<propertyKey> <operator> <value>',
-  message: {
-    to: '<phone number>',
-    body: '<string>'
+  "condition": "<propertyKey> <operator> <value>",
+  "message": {
+    "to": "<phone number>",
+    "body": "<string>"
   }
 }
 ```
