@@ -4,9 +4,10 @@ Example script for the [EVRYTHNG Reactor](https://developers.evrythng.com/refere
 allows sending of SMS messages through the [`twilio`](https://github.com/twilio/twilio-node) NPM 
 module. 
 
-The script itself requires onyl minimal changes - your Twilio Account SID and Auth Token (available 
-from the [Twilio console](https://www.twilio.com/console)). Once it is set up, creating an action of 
-a specific type with the message details embedded within the action will cause Twilio to send an SMS.
+The script itself requires onyl minimal changes - your Twilio Account SID, Auth Token, and Phone 
+Number (available from the [Twilio console](https://www.twilio.com/console)). Once it is set up, 
+creating an action of a specific type with the message details embedded within the action will cause 
+Twilio to send an SMS.
 
 
 ## Installation
@@ -26,10 +27,12 @@ a specific type with the message details embedded within the action will cause T
 3. Optionally, set some `PROPERTY_RULES` if required (see 'Usage Modes' below).
 
 
-## Test with an SMS
+## Usage Modes
 
-Once the Reactor script is installed, and the Reactor script updated with Twilio credentials, 
-sending an SMS through EVRYTHNG is simply a matter of creating an action with the message details:
+### Action Creation
+
+The script will send an SMS message when an EVRYTHNG action is created in the scope of 
+the project of the `_sendSMS` type with the correct `customFields`: 
 
 * `customFields.to` - The recipient SMS number.
 * `customFields.body` - The content of the SMS message.
@@ -50,14 +53,6 @@ Authorization: $OPERATOR_API_KEY
   }
 }
 ```
-
-
-## Usage Modes
-
-### Action Creation
-
-The script will send an SMS message when an EVRYTHNG action is created in the scope of 
-the project of the `_sendSMS` type with the correct `to` and `body` `customFields`. 
 
 
 ### Thng Property Rules
