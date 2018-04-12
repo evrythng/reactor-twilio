@@ -4,9 +4,9 @@ Example script for the [EVRYTHNG Reactor](https://developers.evrythng.com/refere
 allows sending of SMS messages through the [`twilio`](https://github.com/twilio/twilio-node) NPM 
 module. 
 
-The script itself requires no changes as part of deployment, as all configuration is done
-via EVRYTHNG Platform resources. Once it is set up, creating an action of a specific type with the 
-message details embedded within the action will cause Twilio to send an SMS.
+The script itself requires onyl minimal changes - your Twilio Account SID and Auth Token (available 
+from the [Twilio console](https://www.twilio.com/console)). Once it is set up, creating an action of 
+a specific type with the message details embedded within the action will cause Twilio to send an SMS.
 
 
 ## Installation
@@ -20,17 +20,18 @@ message details embedded within the action will cause Twilio to send an SMS.
 
 ## Configuration
 
-1. Obtain your Account SID and Auth Token from the [Twilio console](https://www.twilio.com/console).
-2. Set these on the chosen EVRYTHNG application's `customFields` as `accountSid` and `authToken`.
+1. Obtain your Account SID, Auth Token, and phone number from the 
+   [Twilio console](https://www.twilio.com/console).
+2. Insert these in the installed Reactor script as `ACCOUNT_SID`, `AUTH_TOKEN`, and `PHONE_NUMBER`.
+3. Optionally, set some `PROPERTY_RULES` if required (see 'Usage Modes' below).
 
 
-## Send an SMS
+## Test with an SMS
 
-Once the Reactor script is installed, and the application updated with Twilio credentials, sending
-an SMS through EVRYTHNG is simply a matter of creating an action with the message details:
+Once the Reactor script is installed, and the Reactor script updated with Twilio credentials, 
+sending an SMS through EVRYTHNG is simply a matter of creating an action with the message details:
 
 * `customFields.to` - The recipient SMS number.
-* `customFields.from` - Your chosen Twilio phone number, set up through the Twilio console.
 * `customFields.body` - The content of the SMS message.
 
 Test by sending an HTTP request:
@@ -45,34 +46,55 @@ Authorization: $OPERATOR_API_KEY
   "thng": "U4MhAkdaVD8atKwRaE4CVrYh",
   "customFields": {
     "to": "+447865784352",
-    "from": "+441246334321",
     "message": "Hello from the EVRYTHNG Reactor!"
   }
 }
 ```
 
-At the moment, the script sends an SMS message when an EVRYTHNG action is created in the scope of 
-the project. In a more advanced integration, an action created when some condition is reached in a 
-Thng property, or on a 
-[Reactor schedule](https://developers.evrythng.com/reference#section-reactor-scheduler-api) can be 
-used.
 
-```js
-function onThngPropertiesChanged(event) {
-  const { newValue } = event.changes.temperature;
-  if (newValue > 100) {
-    // Send temperature alert
-    const message = {
-      to: '+447865784352',
-      from: '+441246334321',
-      message: `Temperature is very high: ${newValue}`
-    };
-    
-    app.$init
-      .then(() => sendSMS(message))
-      .then(message => logger.info(`message.id=${message.sid}`))
-      .catch(err => logger.error(err))
-      .then(done);
+## Usage Modes
+
+### Action Creation
+
+The script will send an SMS message when an EVRYTHNG action is created in the scope of 
+the project of the `_sendSMS` type with the correct `to` and `body` `customFields`. 
+
+
+### Thng Property Rules
+
+As an alternative to action creation, the script also offers a property rules feature. If a 
+project-scoped Thng has its properties changed, the list of `PROPERTY_RULES` in the script is 
+examined, and any matching rules evaluated and actioned via sending the specified SMS message.
+
+Each item in the `PROPERTY_RULES` array must take the following format:
+
+```json
+{
+  condition: '<propertyKey> <operator> <value>',
+  message: {
+    to: '<phone number>',
+    body: '<string>'
   }
 }
+```
+
+Where `propertyKey` is a Thng property key, and `operator` is one of `>`, `>=`, `==`, `<`, `<=`, 
+`includes`, `!=`.
+
+An pair of example rules is shown below:
+
+```js
+const PROPERTY_RULES = [{
+  condition: 'temperature_celsius > 0',
+  message: {
+    to: '+447794448002',
+    body: 'Temperature exceeded acceptable levels!'
+  }
+}, {
+  condition: 'weather_report includes rain',
+  message: {
+    to: '+447794448002',
+    body: 'Rain is forecast!'
+  }
+}];
 ```
