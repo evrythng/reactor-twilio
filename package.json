@@ -1,0 +1,15 @@
+{
+  "name": "reactor-twilio",
+  "version": "1.0.0",
+  "description": "Example Reactor script to allow Twilio integration with EVRYTHNG",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evrythng/reactor-twilio.git"
+  },
+  "author": "EVRYTHNG",
+  "license": "Apache",
+  "dependencies": {
+    "evrythng-extended": "^4.7.2",
+    "twilio": "^3.14.0"
+  }
+}
