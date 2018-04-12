@@ -85,7 +85,7 @@ An pair of example rules is shown below:
 
 ```js
 const PROPERTY_RULES = [{
-  condition: 'temperature_celsius > 0',
+  condition: 'temperature_celsius > 100',
   message: {
     to: '+447794448002',
     body: 'Temperature exceeded acceptable levels!'
