@@ -31,34 +31,34 @@ const sendSMS = ({ to, body }) => {
 
 // ----------------------------------- Rules -----------------------------------
 
-const runRule = (rule, update) => {
-  const sections = rule.condition.split(' ');
-  if (sections.length !== 3) throw new Error('Invalid rule');
+const runPropertyRule = (rule, propertyValue, onRuleMet) => {
+  const tokens = rule.condition.split(' ');
+  if (tokens.length !== 3) throw new Error('Invalid rule');
 
-  const [key, condition, ruleValue] = sections;
+  const [key, condition, ruleValue] = tokens;
   const handlers = {
-    '>': val => val > ruleValue,
-    '>=': val => val >= ruleValue,
-    '==': val => val == ruleValue,
-    '<': val => val < ruleValue,
-    '<=': val => val <= ruleValue,
-    includes: val => `${val}`.includes(ruleValue),
-    '!=': val => val != ruleValue,
+    '>': n => n > ruleValue,
+    '>=': n => n >= ruleValue,
+    '==': n => n == ruleValue,
+    '<': n => n < ruleValue,
+    '<=': n => n <= ruleValue,
+    includes: n => `${n}`.includes(ruleValue),
+    '!=': n => n != ruleValue,
   };
   if (!handlers[condition]) throw new Error(`Invalid rule condition: ${condition}`);
-  if (!handlers[condition](update.newValue)) return Promise.resolve();
+  if (!handlers[condition](propertyValue)) return Promise.resolve();
 
-  return sendSMS(rule.message);
+  return onRuleMet();
 };
 
-const checkRules = (event) => {
+const checkPropertyRules = (event) => {
   const update = event.changes;
   return Promise.all(Object.keys(update).map((key) => {
     const rule = PROPERTY_RULES.find(item => item.condition.includes(key));
     if (!rule) return Promise.resolve();
 
     logger.info(`Running rule ${rule.condition}`);
-    return runRule(rule, update[key]);
+    return runPropertyRule(rule, update[key].newValue, () => sendSMS(rule.message));
   }));
 };
 
@@ -74,7 +74,7 @@ function onActionCreated(event) {
 }
 
 function onThngPropertiesChanged(event) {
-  checkRules(event)
+  checkPropertyRules(event)
     .then(() => logger.info('Finished checking rules'))
     .catch(err => logger.error(err))
     .then(done);
